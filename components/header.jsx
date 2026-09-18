@@ -8,7 +8,8 @@ import { logoutAction } from 'lib/session-actions';
 const navItems = [
     { linkText: 'Buscar', href: '/buscar' },
     { linkText: 'Alertas', href: '/alertas' },
-    { linkText: 'Importar imóvel', href: '/imoveis/importar' }
+    { linkText: 'Importar imóvel', href: '/imoveis/importar' },
+    { linkText: 'Revisar', href: '/imoveis/revisar' }
 ];
 
 export async function Header() {

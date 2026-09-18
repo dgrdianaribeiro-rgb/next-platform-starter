@@ -52,8 +52,17 @@ Fortaleza:
   violaria os termos de uso da maioria deles e é tecnicamente frágil por causa de proteções anti-bot. Os dados
   vêm sempre um link por vez, revisados e completados manualmente antes de salvar.
 - **Alertas** (`/alertas`, requer login): salve critérios de busca (bairro, preço, quartos) e ative notificações
-  push no navegador. Quando alguém importa um imóvel compatível, os usuários com alerta correspondente recebem
-  uma notificação push na hora.
+  push no navegador. Quando alguém importa (manual ou automaticamente) um imóvel compatível, os usuários com
+  alerta correspondente recebem uma notificação push na hora.
+- **Descoberta automática via sitemap** (`netlify/functions/discover-listings.js`, roda a cada hora): lê o
+  `sitemap.xml` público das fontes configuradas em `IMPORT_SOURCES` — o mesmo índice de páginas que o site
+  publica para o Google indexar, não a página de busca renderizada. Isso é fundamentalmente diferente de um
+  robô de scraping: não há tentativa de contornar proteção anti-bot, e a função confere o `robots.txt` do site
+  antes de ler cada página. Ainda assim, **isso não substitui checar os Termos de Uso de cada site**: o
+  `robots.txt` permite que crawlers leiam uma página, mas não necessariamente autoriza importar o conteúdo dela
+  para outro serviço — essa checagem é responsabilidade de quem configura `IMPORT_SOURCES`. Por padrão nenhuma
+  fonte está configurada, então essa função não faz nada. Candidatos descobertos não entram direto na busca:
+  ficam em uma fila de revisão em `/imoveis/revisar`, onde alguém confirma/edita os dados e só então publica.
 
 ### Configuração de variáveis de ambiente
 
@@ -63,6 +72,8 @@ Copie `.env.example` para `.env` (ou configure no painel do Netlify) e preencha:
 - `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT`: chaves para notificações push. Gere o par com
   `npx web-push generate-vapid-keys`. Sem essas chaves, o site funciona normalmente mas as notificações ficam
   desativadas.
+- `IMPORT_SOURCES` (opcional): lista JSON de sitemaps para a descoberta automática de imóveis. Veja
+  `data/import-sources.js` para o formato e as ressalvas antes de configurar uma fonte.
 
 ## Resources
 
