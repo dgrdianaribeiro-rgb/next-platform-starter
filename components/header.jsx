@@ -2,19 +2,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import netlifyLogo from 'public/netlify-logo.svg';
 import githubLogo from 'public/images/github-mark-white.svg';
+import { getCurrentUser } from 'lib/session';
+import { logoutAction } from 'lib/session-actions';
 
 const navItems = [
-    { linkText: 'Home', href: '/' },
-    { linkText: 'Revalidation', href: '/revalidation' },
-    { linkText: 'Image CDN', href: '/image-cdn' },
-    { linkText: 'Edge Function', href: '/edge' },
-    { linkText: 'Blobs', href: '/blobs' },
-    { linkText: 'Classics', href: '/classics' },
-    { linkText: 'Middleware', href: '/middleware' },
-    { linkText: 'Routing', href: '/routing' }
+    { linkText: 'Buscar', href: '/buscar' },
+    { linkText: 'Alertas', href: '/alertas' },
+    { linkText: 'Importar imóvel', href: '/imoveis/importar' }
 ];
 
-export function Header() {
+export async function Header() {
+    const user = await getCurrentUser();
+
     return (
         <nav className="flex flex-wrap items-center gap-4 pt-6 pb-12 sm:pt-12 md:pb-24">
             <Link href="/">
@@ -31,14 +30,30 @@ export function Header() {
                     ))}
                 </ul>
             )}
-            <Link
-                href="https://github.com/netlify-templates/next-platform-starter"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ml-auto"
-            >
-                <Image src={githubLogo} alt="GitHub logo" className="w-7" />
-            </Link>
+            <div className="flex items-center gap-3 ml-auto">
+                {user ? (
+                    <>
+                        <span className="text-sm">Olá, {user.name}</span>
+                        <form action={logoutAction}>
+                            <button type="submit" className="text-sm underline">
+                                Sair
+                            </button>
+                        </form>
+                    </>
+                ) : (
+                    <>
+                        <Link href="/entrar" className="text-sm">
+                            Entrar
+                        </Link>
+                        <Link href="/registrar" className="text-sm">
+                            Criar conta
+                        </Link>
+                    </>
+                )}
+                <Link href="https://github.com/netlify-templates/next-platform-starter" target="_blank" rel="noopener noreferrer">
+                    <Image src={githubLogo} alt="GitHub logo" className="w-7" />
+                </Link>
+            </div>
         </nav>
     );
 }
